@@ -15,6 +15,7 @@ datafile <- './data/2018_Central_Park_Squirrel_Census_-_Squirrel_Data.csv'
 squirrel_data <- read.csv(datafile)
 colnames(squirrel_data)[1] <-"longitude"
 colnames(squirrel_data)[2] <-"latitude"
+colnames(squirrel_data)[29] <- "run_from"
 
 #Converting date strings to Date objects
 new_dates<-c()
@@ -85,7 +86,19 @@ server <- function(input, output) {
   
   #Time window filter
   dataInput <- reactive({
-    squirrel_data<-squirrel_data[squirrel_data$Date>=input$dates[1] & squirrel_data$Date<=input$dates[2],]
+    if(input$select=="ALL"){
+      squirrel_data<-squirrel_data[squirrel_data$Date>=input$dates[1] & squirrel_data$Date<=input$dates[2],]
+    }else{
+      if(input$select=="Approaches humans"){
+        squirrel_data<-squirrel_data[squirrel_data$Date>=input$dates[1] & squirrel_data$Date<=input$dates[2] & squirrel_data$Approaches=="true",]
+      }else{
+        if(input$select=="Indifferent"){
+          squirrel_data<-squirrel_data[squirrel_data$Date>=input$dates[1] & squirrel_data$Date<=input$dates[2] & squirrel_data$Indifferent=="true",]
+        }else{
+          squirrel_data<-squirrel_data[squirrel_data$Date>=input$dates[1] & squirrel_data$Date<=input$dates[2] & squirrel_data$run_from=="true",]
+        }
+      }
+    }
     squirrel_data
   })
   
