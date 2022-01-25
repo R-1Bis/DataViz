@@ -65,7 +65,13 @@ ui <- fluidPage(
            dateRangeInput("dates",label=h3("Date range"),
                           min = "2018-10-01",max = "2018-10-31",
                           start = "2018-10-01",end="2018-10-31"),
-           hr()
+           hr(),
+           selectInput("select", strong("Behavior"), 
+                       choices = list("ALL",
+                                      "Approaches humans",
+                                      "Indifferent", 
+                                      "Run from humans"), 
+                       selected = "ALL"),
            )
   ),
   
