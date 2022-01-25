@@ -56,19 +56,24 @@ squirrel_data$newLon<-new_lon
 
 ui <- fluidPage(
   fluidRow(
+    h2("October 2018 Squirrel Census in Central Park"),
+    p("This little application presents data collected in the ",
+         a("2018 Squirrel Census", href ="https://data.cityofnewyork.us/Environment/2018-Squirrel-Census-Fur-Color-Map/fak5-wcft"),
+         ". We offer different visualisation tools to examine this dataset. These visual tools are parameterized by a time range 
+      and the behavior of the squirrels.", style="font-size:16px"),
     
     column(8,
            h3("Map of Squirrel presence in Central Park"),
            leafletOutput("map"),
-           h4("The map here above presents squirrel presence in central park for the data range selected. 
-              The map shows the squirrels that present the selected behavior.")
+           p("The map here above presents squirrel presence in central park for the time range selected. 
+              The map shows the squirrels that present the selected behavior.", style="font-size:16px")
            ),
     
     column(4,
            dateRangeInput("dates",label=h3("Date range"),
                           min = "2018-10-01",max = "2018-10-31",
                           start = "2018-10-01",end="2018-10-31"),
-           h4("Changing the Theta parameter will change the orientation of the plot here under on the left."),
+           p("Changing the Theta parameter will change the orientation of the plot here under on the left.", style="font-size:16px"),
            numericInput("num",label=h3("Theta"),value=-29.85),
            selectInput("select", h3("Behavior"), 
                        choices = list("ALL",
@@ -85,8 +90,8 @@ ui <- fluidPage(
            ),
     column(6,
            plotOutput(outputId = "histPlot"),
-           h4("This histogram presents the number of squirrels found in Central Park within the previously selected time
-              range and with the chosen behavior")
+           p("This histogram presents the number of squirrels found in Central Park within the previously selected time
+              range and with the chosen behavior", style="font-size:16px")
            )
     )
 )
@@ -98,19 +103,10 @@ server <- function(input, output) {
   
   #Time window filter
   dataInput <- reactive({
-    if(input$select=="ALL"){
-      squirrel_data<-squirrel_data[squirrel_data$Date>=input$dates[1] & squirrel_data$Date<=input$dates[2],]
-    }else{
-      if(input$select=="Approaches humans"){
-        squirrel_data<-squirrel_data[squirrel_data$Date>=input$dates[1] & squirrel_data$Date<=input$dates[2] & squirrel_data$Approaches=="true",]
-      }else{
-        if(input$select=="Indifferent"){
-          squirrel_data<-squirrel_data[squirrel_data$Date>=input$dates[1] & squirrel_data$Date<=input$dates[2] & squirrel_data$Indifferent=="true",]
-        }else{
-          squirrel_data<-squirrel_data[squirrel_data$Date>=input$dates[1] & squirrel_data$Date<=input$dates[2] & squirrel_data$run_from=="true",]
-        }
-      }
-    }
+    squirrel_data<-squirrel_data[squirrel_data$Date>=input$dates[1] & squirrel_data$Date<=input$dates[2],]
+    if(input$select=="Approaches humans") squirrel_data<-squirrel_data[squirrel_data$Approaches=="true",]
+    if(input$select=="Indifferent") squirrel_data<-squirrel_data[squirrel_data$Indifferent=="true",]
+    if(input$select=="Run from humans") squirrel_data<-squirrel_data[squirrel_data$run_from=="true",]
     squirrel_data
   })
   
@@ -140,7 +136,7 @@ server <- function(input, output) {
       theDate<-theDate+1
     }
     
-    hist(dataInput()$Date,breaks=bins, col = "#75AADB", border = "white", xlab = "Date", ylab = "number of squirrel", freq = TRUE, main = "Histogram of squirrel presence in time")
+    hist(dataInput()$Date,breaks=bins, col = "#75AADB", xlab = "Date", ylab = "number of squirrel", freq = TRUE, main = "Histogram of squirrel presence in time")
   })
   
   output$map <- renderLeaflet({
