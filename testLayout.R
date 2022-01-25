@@ -58,7 +58,7 @@ ui <- fluidPage(
   fluidRow(
     
     column(8,
-           h3("Map of Squirrel presence"),
+           h3("Map of Squirrel presence in Central Park"),
            leafletOutput("map"),
            h4("The map here above presents squirrel presence in central park for the data range selected. 
               The map shows the squirrels that present the selected behavior.")
@@ -68,8 +68,9 @@ ui <- fluidPage(
            dateRangeInput("dates",label=h3("Date range"),
                           min = "2018-10-01",max = "2018-10-31",
                           start = "2018-10-01",end="2018-10-31"),
-           hr(),
-           selectInput("select", strong("Behavior"), 
+           h4("Changing the Theta parameter will change the orientation of the plot here under on the left."),
+           numericInput("num",label=h3("Theta"),value=-29.85),
+           selectInput("select", h3("Behavior"), 
                        choices = list("ALL",
                                       "Approaches humans",
                                       "Indifferent", 
@@ -83,7 +84,9 @@ ui <- fluidPage(
            plotOutput("plot")
            ),
     column(6,
-           plotOutput(outputId = "histPlot")
+           plotOutput(outputId = "histPlot"),
+           h4("This histogram presents the number of squirrels found in Central Park within the previously selected time
+              range and with the chosen behavior")
            )
     )
 )
@@ -118,7 +121,7 @@ server <- function(input, output) {
     new<-c()
     data<-dataInput()
     for (i in 1:length(data$latitude)) {
-      pos<-rotate(data$latitude[i],data$longitude[i])
+      pos<-rotate(data$latitude[i],data$longitude[i], input$num)
       new_lat<-append(new_lat,pos[1])
       new_lon<-append(new_lon,pos[2])
     }
@@ -132,13 +135,12 @@ server <- function(input, output) {
     
     bins<-c()
     theDate<-input$dates[1]
-    while(theDate<=input$dates[2])
-      {
+    while(theDate<=input$dates[2]) {
       bins<-append(bins,theDate)
       theDate<-theDate+1
-      }
+    }
     
-    hist(dataInput()$Date,breaks=bins, col = "#75AADB", border = "white", xlab = "Date")
+    hist(dataInput()$Date,breaks=bins, col = "#75AADB", border = "white", xlab = "Date", ylab = "number of squirrel", freq = TRUE, main = "Histogram of squirrel presence in time")
   })
   
   output$map <- renderLeaflet({
