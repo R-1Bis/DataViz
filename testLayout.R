@@ -51,16 +51,17 @@ print(head(squirrel_data))
 ui <- fluidPage(
   fluidRow(
     
-    column(6,
+    column(8,
+           h3("Map of Squirrel presence in the chosen date range"),
            leafletOutput("map")
            ),
     
-    column(6,
+    column(4,
            dateRangeInput("dates",label=h3("Date range"),
                           min = "2018-10-01",max = "2018-10-31",
                           start = "2018-10-01",end="2018-10-31"),
            hr(),
-           numericInput("num",label='',value=-36)
+           numericInput("num",label=h3("Latitude"),value=-36)
            )
   ),
   
@@ -116,7 +117,7 @@ server <- function(input, output) {
   
   output$plot <- renderPlot({
     data<-dataRotate()
-    plot(data$newLat,data$newLon)
+    plot(data$newLat,data$newLon, xlab = "Latitude", ylab = "Longitude")
   })
 }
 
