@@ -58,8 +58,10 @@ ui <- fluidPage(
   fluidRow(
     
     column(8,
-           h3("Map of Squirrel presence in the chosen date range"),
-           leafletOutput("map")
+           h3("Map of Squirrel presence"),
+           leafletOutput("map"),
+           h4("The map here above presents squirrel presence in central park for the data range selected. 
+              The map shows the squirrels that present the selected behavior.")
            ),
     
     column(4,
@@ -136,7 +138,7 @@ server <- function(input, output) {
       theDate<-theDate+1
       }
     
-    hist(dataInput()$Date,breaks=bins, col = "#75AADB", border = "white")
+    hist(dataInput()$Date,breaks=bins, col = "#75AADB", border = "white", xlab = "Date")
   })
   
   output$map <- renderLeaflet({
